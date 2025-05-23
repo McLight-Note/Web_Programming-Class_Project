@@ -25,13 +25,59 @@ def product_list(request):
     search_query = request.GET.get('search')
 
     if category_slug:
-        products = products.filter(category__slug=category_slug)
+        if category_slug == 'clothing':
+            products = products.filter(
+                Q(name__icontains='running') |
+                Q(name__icontains='shorts') |
+                Q(name__icontains='sports') |
+                Q(name__icontains='cap') |
+                Q(name__icontains='t-shirt') |
+                Q(name__icontains='tshirt') |
+                Q(name__icontains='hoodie') |
+                Q(name__icontains='jacket') |
+                Q(name__icontains='trench') |
+                Q(name__icontains='jeans') |
+                Q(name__icontains='shirt') |
+                Q(name__icontains='pants')
+            )
+        elif category_slug == 'accessories':
+            products = products.filter(
+                Q(name__icontains='graphic') |
+                Q(name__icontains='tee') |
+                Q(name__icontains='beanie') |
+                Q(name__icontains='hat') |
+                Q(name__icontains='sunglasses') |
+                Q(name__icontains='scarf') |
+                Q(name__icontains='gloves') |
+                Q(name__icontains='belt') |
+                Q(name__icontains='watch') |
+                Q(name__icontains='wallet')
+            )
+        elif category_slug == 'footwear':
+            products = products.filter(
+                Q(name__icontains='slides') |
+                Q(name__icontains='sneakers') |
+                Q(name__icontains='shoes')
+            )
+        elif category_slug == 'bag':
+            products = products.filter(
+                Q(name__icontains='backpack') |
+                Q(name__icontains='bag')
+            )
+        else:
+            products = products.filter(category__slug=category_slug)
     
     if search_query:
         products = products.filter(
             Q(name__icontains=search_query) |
             Q(description__icontains=search_query)
         )
+
+    # Debug print
+    print(f"Category: {category_slug}")
+    print(f"Number of products: {products.count()}")
+    for product in products:
+        print(f"Product: {product.name}")
 
     return render(request, 'shop/product_list.html', {
         'products': products,
@@ -110,3 +156,21 @@ def checkout(request):
         CartItem.objects.filter(user=request.user).delete()
         return JsonResponse({'status': 'success'})
     return JsonResponse({'status': 'error'}, status=400)
+
+def search(request):
+    query = request.GET.get('q', '').strip()
+    if len(query) < 2:
+        return JsonResponse({'products': []})
+    
+    products = Product.objects.filter(
+        Q(name__icontains=query) |
+        Q(description__icontains=query)
+    )[:5]  # Limit to 5 results for live search
+    
+    results = [{
+        'name': product.name,
+        'price': str(product.price),
+        'image': product.image.url if product.image else '',
+    } for product in products]
+    
+    return JsonResponse({'products': results})

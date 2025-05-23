@@ -1,0 +1,4 @@
+Username: testuser123
+Registration Time: 2025-05-23 06:32:13
+Status: Active
+--------------------------------------------------

@@ -6,10 +6,12 @@
 {% block content %}
 <div class="row mb-4">
     <div class="col-md-8">
-        <form method="get" class="d-flex">
-            <input type="text" name="search" class="form-control me-2" placeholder="Search products..." value="{{ search_query }}">
+        <form method="get" class="d-flex" id="searchForm">
+            <input type="text" name="search" id="searchInput" class="form-control me-2" placeholder="Search products..." value="{{ search_query }}" autocomplete="off">
             <button type="submit" class="btn btn-primary">Search</button>
         </form>
+        <div id="searchResults" class="position-absolute bg-white shadow-sm rounded" style="display: none; width: 100%; max-height: 300px; overflow-y: auto; z-index: 1000;">
+        </div>
     </div>
 </div>
 
@@ -24,12 +26,22 @@
                    class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}">
                     All Products
                 </a>
-                {% for category in categories %}
-                <a href="{% url 'shop:product_list' %}?category={{ category.slug }}" 
-                   class="list-group-item list-group-item-action {% if current_category == category.slug %}active{% endif %}">
-                    {{ category.name }}
+                <a href="{% url 'shop:product_list' %}?category=clothing" 
+                   class="list-group-item list-group-item-action {% if current_category == 'clothing' %}active{% endif %}">
+                    👕 Clothing
                 </a>
-                {% endfor %}
+                <a href="{% url 'shop:product_list' %}?category=accessories" 
+                   class="list-group-item list-group-item-action {% if current_category == 'accessories' %}active{% endif %}">
+                    🧢 Accessories
+                </a>
+                <a href="{% url 'shop:product_list' %}?category=footwear" 
+                   class="list-group-item list-group-item-action {% if current_category == 'footwear' %}active{% endif %}">
+                    👟 Footwear
+                </a>
+                <a href="{% url 'shop:product_list' %}?category=bag" 
+                   class="list-group-item list-group-item-action {% if current_category == 'bag' %}active{% endif %}">
+                    🎒 Bag
+                </a>
             </div>
         </div>
     </div>
@@ -41,8 +53,34 @@
                 <div class="card h-100">
                     <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: contain;">
                     <div class="card-body">
+                        {% with category_type=product.name|lower %}
+                            {% if 'running' in category_type or 'shorts' in category_type or 'sports' in category_type or 'cap' in category_type or 't-shirt' in category_type or 'tshirt' in category_type or 'hoodie' in category_type or 'jacket' in category_type or 'trench' in category_type or 'jeans' in category_type %}
+                                <a href="{% url 'shop:product_list' %}?category=clothing" class="category-badge clothing">
+                                    👕 Clothing
+                                </a>
+                            {% elif 'graphic' in category_type or 'tee' in category_type %}
+                                <a href="{% url 'shop:product_list' %}?category=accessories" class="category-badge accessories">
+                                    🧢 Accessories
+                                </a>
+                            {% elif 'beanie' in category_type or 'hat' in category_type or 'sunglasses' in category_type or 'scarf' in category_type or 'gloves' in category_type or 'belt' in category_type or 'watch' in category_type or 'wallet' in category_type %}
+                                <a href="{% url 'shop:product_list' %}?category=accessories" class="category-badge accessories">
+                                    🧢 Accessories
+                                </a>
+                            {% elif 'slides' in category_type or 'sneakers' in category_type %}
+                                <a href="{% url 'shop:product_list' %}?category=footwear" class="category-badge footwear">
+                                    👟 Footwear
+                                </a>
+                            {% elif 'backpack' in category_type %}
+                                <a href="{% url 'shop:product_list' %}?category=bag" class="category-badge bag">
+                                    🎒 Bag
+                                </a>
+                            {% else %}
+                                <div class="category-badge">
+                                    {{ product.category.name }}
+                                </div>
+                            {% endif %}
+                        {% endwith %}
                         <h5 class="card-title">{{ product.name }}</h5>
-                        <p class="card-text text-muted">{{ product.category.name }}</p>
                         <p class="card-text">${{ product.price }}</p>
                         {% if user.is_authenticated %}
                         <button class="btn btn-primary add-to-cart" data-product-id="{{ product.id }}">
@@ -86,5 +124,114 @@ document.querySelectorAll('.add-to-cart').forEach(button => {
         });
     });
 });
+
+// Live Search Functionality
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+let searchTimeout;
+
+searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const query = this.value.trim();
+    
+    if (query.length < 2) {
+        searchResults.style.display = 'none';
+        return;
+    }
+    
+    searchTimeout = setTimeout(() => {
+        fetch(`/search/?q=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                searchResults.innerHTML = '';
+                if (data.products.length > 0) {
+                    data.products.forEach(product => {
+                        const div = document.createElement('div');
+                        div.className = 'p-2 border-bottom search-item';
+                        div.style.cursor = 'pointer';
+                        div.innerHTML = `
+                            <div class="d-flex align-items-center">
+                                <img src="${product.image}" alt="${product.name}" style="width: 40px; height: 40px; object-fit: contain; margin-right: 10px;">
+                                <div>
+                                    <div class="fw-bold">${product.name}</div>
+                                    <div class="text-muted">$${product.price}</div>
+                                </div>
+                            </div>
+                        `;
+                        div.addEventListener('click', () => {
+                            window.location.href = `?search=${encodeURIComponent(product.name)}`;
+                        });
+                        searchResults.appendChild(div);
+                    });
+                    searchResults.style.display = 'block';
+                } else {
+                    searchResults.style.display = 'none';
+                }
+            });
+    }, 300);
+});
+
+// Close search results when clicking outside
+document.addEventListener('click', function(e) {
+    if (!searchInput.contains(e.target) && !searchResults.contains(e.target)) {
+        searchResults.style.display = 'none';
+    }
+});
 </script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    .category-badge {
+        display: inline-block;
+        padding: 4px 8px;
+        background-color: #f0f0f0;
+        color: #666;
+        border-radius: 12px;
+        font-size: 0.8rem;
+        margin-bottom: 10px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s ease;
+    }
+    
+    .category-badge:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .category-badge.clothing {
+        background-color: #e3f2fd;
+        color: #1976d2;
+    }
+    
+    .category-badge.accessories {
+        background-color: #fce4ec;
+        color: #c2185b;
+    }
+    
+    .category-badge.footwear {
+        background-color: #e8f5e9;
+        color: #2e7d32;
+    }
+    
+    .category-badge.bag {
+        background-color: #fff3e0;
+        color: #f57c00;
+    }
+    
+    .card {
+        transition: transform 0.2s;
+        border: 1px solid #eee;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .search-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
 {% endblock %} 
