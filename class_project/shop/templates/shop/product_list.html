@@ -1,0 +1,90 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+
+{% block title %}Products - BuyEasy{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <form method="get" class="d-flex">
+            <input type="text" name="search" class="form-control me-2" placeholder="Search products..." value="{{ search_query }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Categories</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                <a href="{% url 'shop:product_list' %}" 
+                   class="list-group-item list-group-item-action {% if not current_category %}active{% endif %}">
+                    All Products
+                </a>
+                {% for category in categories %}
+                <a href="{% url 'shop:product_list' %}?category={{ category.slug }}" 
+                   class="list-group-item list-group-item-action {% if current_category == category.slug %}active{% endif %}">
+                    {{ category.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-9">
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            {% for product in products %}
+            <div class="col">
+                <div class="card h-100">
+                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}" style="height: 200px; object-fit: contain;">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text text-muted">{{ product.category.name }}</p>
+                        <p class="card-text">${{ product.price }}</p>
+                        {% if user.is_authenticated %}
+                        <button class="btn btn-primary add-to-cart" data-product-id="{{ product.id }}">
+                            Add to Cart
+                        </button>
+                        {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary">Login to Buy</a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info">
+                    No products found matching your criteria.
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.add-to-cart').forEach(button => {
+    button.addEventListener('click', function() {
+        const productId = this.dataset.productId;
+        fetch(`/cart/add/${productId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                updateCartCount();
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

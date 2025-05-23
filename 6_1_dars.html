@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>HW 6_1</title>
+        <style>
+            .whole{
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                width: 300px;
+                border: solid 1px;
+                padding: 10px;
+            }
+
+            .content{
+                display: flex;
+                flex-direction: column;
+            }
+
+            .gender{
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="whole">
+            <h4>User Personal Information</h4>
+            <div class="content">
+                <label>Enter your full name</label><br>
+                <input type="username">
+            </div>
+            <div class="content">
+                <label>Enter your email</label><br>
+                <input type="email">
+            </div>
+            <div class="content">
+                <label>Enter your password</label><br>
+                <input type="password">
+            </div>
+            <div class="content">
+                <label>Confirm your password</label><br>
+                <input type="password">
+            </div>
+            <div>
+                <label>Select your gender:</label><br>
+                <div class="gender">
+                    <input type="radio" id="male" name="gender" value="male">
+                    <label for="male">Male</label>
+                    <input type="radio" id="female" name="gender" value="female">
+                    <label for="female">Female</label>
+                </div>
+     
+            </div>
+            <div class="content">
+                <label>Enter your date of birth</label><br>
+                <input type="date">
+            </div>
+            <div class="content">
+                <label>Enter your adress</label><br>
+                <input type="text" name="adress" placeholder="adress">
+            </div>
+            <div>
+                <button>Submit</button>
+            </div>
+        </div>
+    </body>
+</html>

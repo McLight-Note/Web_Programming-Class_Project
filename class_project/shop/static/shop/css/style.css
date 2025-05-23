@@ -1,0 +1,130 @@
+/* Header Styles */
+.navbar {
+    background: linear-gradient(to right, #2c3e50, #3498db) !important;
+    padding: 1rem 0;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.navbar-brand {
+    color: white !important;
+    font-size: 1.5rem;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover {
+    transform: scale(1.05);
+}
+
+.nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    font-weight: 500;
+    padding: 0.5rem 1rem !important;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    color: white !important;
+    transform: translateY(-2px);
+}
+
+/* Product Card Styles */
+.card {
+    border: none;
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.card-img-top {
+    height: 200px;
+    object-fit: contain;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.05);
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.card-text {
+    color: #3498db;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.btn-primary {
+    background: linear-gradient(to right, #3498db, #2980b9);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #2980b9, #2c3e50);
+    transform: translateY(-2px);
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+}
+
+/* Cart Badge */
+#cart-count {
+    background-color: #e74c3c;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 50%;
+    font-size: 0.8rem;
+    margin-left: 0.3rem;
+}
+
+/* Welcome Message */
+.nav-link span {
+    color: white;
+    font-weight: 500;
+}
+
+/* Logout Button */
+.btn-link.nav-link {
+    color: rgba(255,255,255,0.9) !important;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+}
+
+.btn-link.nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: white !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .navbar {
+        padding: 0.5rem 0;
+    }
+    
+    .card-img-top {
+        height: 150px;
+    }
+    
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+} 

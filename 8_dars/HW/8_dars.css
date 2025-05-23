@@ -1,0 +1,28 @@
+    .converter-box {
+      border: 1px solid #333;
+      padding: 20px;
+      width: 300px;
+      font-family: Arial, sans-serif;
+    }
+
+    .converter-box h3 {
+      margin-top: 0;
+    }
+
+    input[type="text"] {
+      padding: 5px;
+      margin: 5px 0;
+    }
+
+    button {
+      padding: 5px 10px;
+      background-color: #e0f0ff;
+      border: 1px solid #3399cc;
+      color: #0077cc;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .output {
+      margin-top: 10px;
+    }

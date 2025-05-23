@@ -1,0 +1,115 @@
+{% extends 'shop/base.html' %}
+
+{% block title %}Your Cart - BuyEasy{% endblock %}
+
+{% block content %}
+<h1 class="mb-4">Your Cart</h1>
+
+{% if cart_items %}
+<div class="cart-items">
+    {% for item in cart_items %}
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="col-md-2">
+                <img src="{{ item.product.image.url }}" class="img-fluid rounded-start" alt="{{ item.product.name }}">
+            </div>
+            <div class="col-md-10">
+                <div class="card-body">
+                    <h5 class="card-title">{{ item.product.name }}</h5>
+                    <p class="card-text">${{ item.product.price }} x {{ item.quantity }}</p>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-outline-primary update-cart" 
+                                data-item-id="{{ item.id }}" 
+                                data-action="decrease">-</button>
+                        <span class="btn btn-outline-secondary">{{ item.quantity }}</span>
+                        <button class="btn btn-outline-primary update-cart" 
+                                data-item-id="{{ item.id }}" 
+                                data-action="increase">+</button>
+                        <button class="btn btn-danger remove-from-cart" 
+                                data-item-id="{{ item.id }}">Remove</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Total: ${{ total }}</h5>
+            <button class="btn btn-success" id="checkout-btn">Checkout</button>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="alert alert-info">
+    Your cart is empty. <a href="{% url 'shop:product_list' %}">Continue shopping</a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.querySelectorAll('.update-cart').forEach(button => {
+    button.addEventListener('click', function() {
+        const itemId = this.dataset.itemId;
+        const action = this.dataset.action;
+        
+        fetch(`/cart/update/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+
+document.querySelectorAll('.remove-from-cart').forEach(button => {
+    button.addEventListener('click', function() {
+        const itemId = this.dataset.itemId;
+        
+        fetch(`/cart/remove/${itemId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                location.reload();
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+});
+
+document.getElementById('checkout-btn').addEventListener('click', function() {
+    fetch('/cart/checkout/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token }}',
+            'Content-Type': 'application/json',
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('Thank you for your purchase!');
+            window.location.href = '{% url "shop:product_list" %}';
+        }
+    })
+    .catch(error => console.error('Error:', error));
+});
+</script>
+{% endblock %} 

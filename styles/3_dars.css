@@ -1,0 +1,61 @@
+body{
+    font-family: Arial, Helvetica, sans-serif;
+    display: grid;
+}
+
+.entry{
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.biography{
+    color: rgb(84, 154, 204);
+    font-weight: bold;
+    font-size: 50px;
+}
+
+.profile-image{
+    height: 250px;
+    border: solid 0.1px;
+}
+
+.name{
+    font-size: 40px;
+}
+
+.nationality-div{
+    display: flex;
+    align-items: start;
+    vertical-align: middle;
+}
+
+.nationality{
+    color: green;
+    font-size: 40px;
+}
+
+.semi-colon{
+    color: red;
+}
+
+.flag-image{
+    height: 30px;
+    border: solid 0.1px;
+    width: 60px;
+}
+
+.info{
+    border: 1px solid rgb(50, 129, 185);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: 350px;
+    padding: 10px;
+    gap: 3px;
+    margin: 20px auto;
+    font-size: 20px;
+}
+.info-setting{
+    justify-content: center;
+}
